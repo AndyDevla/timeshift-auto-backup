@@ -77,4 +77,4 @@ if ! sudo timeshift --list; then
 fi
 
 info "Process completed successfully."
-info "Proceso completado con éxito."
+info "To create another snapshot of the entire system, just run the script again."
