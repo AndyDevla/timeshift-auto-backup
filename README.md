@@ -1,4 +1,4 @@
-# Timeshift Auto Backup
+# Timeshift Auto Backup Script
 
 [![Build Status](https://travis-ci.org/joemccann/dillinger.svg?branch=master)](https://raw.githubusercontent.com/AndyDevla/ipfs-auto-installer/main/ipfs-auto-installer.sh)
 
