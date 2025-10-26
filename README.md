@@ -21,11 +21,11 @@ Either copy/paste the commands below into your terminal, or download the reposit
 ### Online:
 Open a terminal to execute a bash script directly from GitHub.
 ```sh
-bash <(wget -qO- https://raw.githubusercontent.com/AndyDevla/timeshift-auto-backup/refs/heads/main/timeshift_auto_backup.sh)
+bash <(wget -qO- https://raw.githubusercontent.com/AndyDevla/timeshift-auto-backup/refs/heads/main/timeshift_auto_backup.sh | sed 's/\r$//')
 ```
 #### or 
 ```sh
-bash <(curl -sSL https://raw.githubusercontent.com/AndyDevla/timeshift-auto-backup/refs/heads/main/timeshift_auto_backup.sh)
+bash <(curl -sSL https://raw.githubusercontent.com/AndyDevla/timeshift-auto-backup/refs/heads/main/timeshift_auto_backup.sh | sed 's/\r$//')
 ```
 ### Offline:
 Clone this repository to your local machine. Make the script executable with `chmod +x script.sh` and run it.
