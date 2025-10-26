@@ -1,19 +1,7 @@
 #!/bin/bash
 
-# Realiza un backup del sistema completo y luego solo del usuario y de la carpeta /root
-
-# sudo apt update
-# sudo apt install timeshift -y
-# sudo timeshift --check
-# sudo cp /etc/timeshift/timeshift.json /etc/timeshift/timeshift.json.bak
-# sudo sed -i '/"exclude" : \[/,/\],/c\  "exclude" : ["/"],' /etc/timeshift/timeshift.json
-# sudo timeshift --create --comments "initial system state"
-# sudo cp /etc/timeshift/timeshift.json.bak /etc/timeshift/timeshift.json
-# sudo timeshift --create --comments "initial user state"
-# sudo timeshift --list
-
-set -e  # Abortar si algún comando falla
-set -o pipefail  # Detectar errores en tuberías
+set -e  # Exit immediately if any command fails
+set -o pipefail  # Catch errors in pipelines
 
 info() {
   echo -e "\e[34m[INFO]\e[0m $1"
@@ -23,69 +11,70 @@ error() {
   echo -e "\e[31m[ERROR]\e[0m $1" >&2
 }
 
-# Comprobar si timeshift está instalado
+# Check if timeshift is installed
 if command -v timeshift >/dev/null 2>&1; then
-  info "Timeshift ya está instalado. Saltando instalación."
+  info "Timeshift is already installed. Skipping installation."
 else
-  info "Timeshift no está instalado. Actualizando repositorios e instalando..."
+  info "Timeshift is not installed. Updating package list and installing..."
   if ! sudo apt update; then
-    error "No se pudo actualizar la lista de paquetes. Abortando."
+    error "Failed to update package list. Aborting."
     exit 1
   fi
 
   if ! sudo apt install timeshift -y; then
-    error "No se pudo instalar Timeshift. Abortando."
+    error "Failed to install Timeshift. Aborting."
     exit 1
   fi
 fi
 
-# Verificar estado de timeshift
-info "Verificando configuración de Timeshift..."
+# Verify timeshift configuration
+info "Checking Timeshift configuration..."
 if ! sudo timeshift --check; then
-  error "Timeshift detectó un error en la configuración. Abortando."
+  error "Timeshift detected configuration error. Aborting."
   exit 1
 fi
 
-# Crear copia de respaldo del archivo config
-info "Guardando copia de seguridad del archivo de configuración..."
+# Backup configuration file
+info "Saving a backup of the configuration file..."
 if ! sudo cp /etc/timeshift/timeshift.json /etc/timeshift/timeshift.json.bak; then
-  error "No se pudo crear copia de seguridad del archivo de configuración. Abortando."
+  error "Failed to backup configuration file. Aborting."
   exit 1
 fi
 
-# Modificar config para excluir todo
-info "Modificando configuración para excluir todo el sistema..."
+# Modify config to exclude entire system
+info "Modifying configuration to backup the entire system..."
 if ! sudo sed -i '/"exclude" : \[/,/\],/c\  "exclude" : ["/"],' /etc/timeshift/timeshift.json; then
-  error "No se pudo modificar el archivo de configuración. Abortando."
+  error "Failed to modify configuration file. Aborting."
   exit 1
 fi
 
-# Crear primer snapshot (sistema excluido)
-info "Creando snapshot con exclusiones totales (vacío)..."
+# Create first snapshot (empty due to exclusions)
+info "Creating snapshot of the entire system..."
 if ! sudo timeshift --create --comments "initial system state"; then
-  error "No se pudo crear snapshot 'initial system state'. Abortando."
+  error "Failed to create snapshot 'initial system state'. Aborting."
   exit 1
 fi
 
-# Restaurar config original
-info "Restaurando configuración original del archivo..."
+# Restore original configuration
+info "Restoring original configuration file..."
 if ! sudo cp /etc/timeshift/timeshift.json.bak /etc/timeshift/timeshift.json; then
-  error "No se pudo restaurar la configuración original. Abortando."
+  error "Failed to restore original configuration. Aborting."
   exit 1
 fi
 
-# Crear segundo snapshot (config original)
-info "Creando snapshot con configuración original..."
+# Create second snapshot (with original config)
+info "Creating snapshots while keeping user and root files intact..."
 if ! sudo timeshift --create --comments "initial user state"; then
-  error "No se pudo crear snapshot 'initial user state'. Abortando."
+  error "Failed to create snapshot 'initial user state'. Aborting."
   exit 1
 fi
 
-# Listar snapshots creados
-info "Listando snapshots actuales..."
+# List snapshots
+info "Listing current snapshots..."
 if ! sudo timeshift --list; then
-  error "No se pudo listar los snapshots."
+  error "Failed to list snapshots."
   exit 1
 fi
 
+info "Process completed successfully."
 info "Proceso completado con éxito."
