@@ -43,7 +43,7 @@ fi
 
 # Modify config to exclude entire system
 info "Modifying configuration to backup the entire system..."
-if ! sudo sed -i '/"exclude" : \[/,/\],/c\  "exclude" : ["/"],' /etc/timeshift/timeshift.json; then
+if ! sudo sed -i '/"exclude" : \[/,/\],/c\  "exclude" : ["+ /"],' /etc/timeshift/timeshift.json; then
   error "Failed to modify configuration file. Aborting."
   exit 1
 fi
